@@ -1,0 +1,142 @@
+<html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weather App</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #b2c9f5;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+    }
+
+    #weather-container {
+      max-width: 400px;
+      margin: 50px auto;
+      background-color:#9ef0f7;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    #weather-icon {
+      width: 80px;
+      height: 80px;
+    }
+
+    input {
+      padding: 8px;
+      margin: 5px;
+      width: 60%;
+      font-size: 16px;
+    }
+
+    button {
+      padding: 8px 16px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    #weather-info {
+      margin-top: 20px;
+    }
+
+    #error-message {
+      color: red;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="weather-container">
+    <h1>Weather App</h1>
+    <input type="text" id="cityInput" placeholder="Enter city name">
+	<br><br>
+    <button style="background-color:black; color:#f4dd46;" onclick="getWeather()">Get Weather</button>
+
+    <div id="weather-info">
+      <h2 id="city"></h2>
+      <p id="temperature"></p>
+      <img id="weather-icon" src=" https://openweathermap.org/img/wn/10d@2x.png" alt="Weather Icon">
+      <p id="description"></p>
+      <p id="humidity"></p>
+      <p id="wind-speed"></p>
+      <p id="error-message"></p>
+    </div>
+  </div>
+
+  <script>
+    function getWeather() {
+      const apiKey = '69b324327f1febe92e02fcd8e2a0a441'; // Replace with your API key
+      const city = document.getElementById('cityInput').value;
+      const errorMessageElement = document.getElementById('error-message');
+
+      if (city === '') {
+        errorMessageElement.textContent = 'Please enter a city name.';
+        clearWeatherInfo();
+        return;
+      }
+
+      const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+
+      fetch(apiUrl)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('City not found');
+          }
+          return response.json();
+        })
+        .then(data => {
+          displayWeather(data);
+          errorMessageElement.textContent = '';
+        })
+        .catch(error => {
+          console.error('Error fetching weather data:', error);
+          errorMessageElement.textContent = 'City not found. Please enter a valid city name.';
+          clearWeatherInfo();
+        });
+    }
+
+    function displayWeather(data) {
+      const cityElement = document.getElementById('city');
+      const temperatureElement = document.getElementById('temperature');
+      const iconElement = document.getElementById('weather-icon');
+      const descriptionElement = document.getElementById('description');
+      const humidityElement = document.getElementById('humidity');
+      const windSpeedElement = document.getElementById('wind-speed');
+
+      cityElement.textContent = data.name;
+      temperatureElement.textContent = `Temperature: ${data.main.temp} °C`;
+      iconElement.src = `http://openweathermap.org/img/wn/${data.weather[0].icon}.png`;
+      descriptionElement.textContent = `Description: ${data.weather[0].description}`;
+      humidityElement.textContent = `Humidity: ${data.main.humidity}%`;
+      windSpeedElement.textContent = `Wind Speed: ${data.wind.speed} m/s`;
+    }
+
+    function clearWeatherInfo() {
+      const cityElement = document.getElementById('city');
+      const temperatureElement = document.getElementById('temperature');
+      const iconElement = document.getElementById('weather-icon');
+      const descriptionElement = document.getElementById('description');
+      const humidityElement = document.getElementById('humidity');
+      const windSpeedElement = document.getElementById('wind-speed');
+
+      cityElement.textContent = '';
+      temperatureElement.textContent = '';
+      iconElement.src = '';
+      descriptionElement.textContent = '';
+      humidityElement.textContent = '';
+      windSpeedElement.textContent = '';
+    }
+  </script>
+
+</body>
+
+</html>
